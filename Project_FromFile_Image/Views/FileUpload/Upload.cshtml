@@ -1,0 +1,73 @@
+﻿@model FileUploadDTO
+@{
+    ViewData["Title"] = "Upload";
+}
+
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="utf-8" />
+    <title>بارگذاری عکس</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        /* استایل سفارشی برای ورودی فایل */
+        .custom-file-input {
+            display: none; /* مخفی کردن ورودی اصلی */
+        }
+
+        .custom-file-label {
+            display: inline-block;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+            .custom-file-label:hover {
+                background-color: #0056b3;
+            }
+    </style>
+</head>
+<body>
+
+    <form id="uploadForm" asp-action="Upload" method="post" enctype="multipart/form-data">
+        <div>
+            <label for="file">عکس مورد نظر را انتخاب کنید:</label>
+            <input type="file" id="file" name="File" accept="image/*" required class="custom-file-input" onchange="confirmUpload(this);" />
+            <label for="file" class="custom-file-label">هیچ فایلی انتخاب نشده است</label> <!-- متن پیش‌فرض -->
+        </div>
+    </form>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmUpload(input) {
+            if (!input.files.length) return; // بررسی اینکه آیا فایلی انتخاب شده است
+
+            const fileName = input.files[0].name; // نام فایل انتخاب شده
+            const fileSize = input.files[0].size; // اندازه فایل (در بایت)
+
+            // تغییر متن دکمه
+            document.querySelector('.custom-file-label').textContent = fileName;
+
+            // نمایش پیغام تأیید
+            Swal.fire({
+                title: "آیا این عکس اوکی است؟",
+                text: `نام فایل: ${fileName}\nاندازه: ${(fileSize / 1024).toFixed(2)} کیلوبایت`,
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: 'ذخیره',
+                cancelButtonText: 'لغو کردن', // متن دکمه کنسل
+                dangerMode: true,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('uploadForm').submit(); // ارسال فرم
+                }else{
+                    location.reload();
+                }
+               
+            });
+        }
+    </script>
+
+</body>
+</html>
